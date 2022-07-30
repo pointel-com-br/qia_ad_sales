@@ -48,9 +48,9 @@ export const register: AdRegBase = {
 export class AdProducts extends AdRegister {
   public constructor(module: AdModule, expect: AdExpect) {
     super(module, expect, register);
-    this.addField(AdTools.newAdFieldString("codigo", "Código", 8).putKey());
+    this.addField(AdTools.newAdFieldString("codigo", "Código", 6).putKey());
     this.addField(AdTools.newAdFieldAtivo());
-    this.addField(AdTools.newAdFieldString("nome", "Nome", 80));
+    this.addField(AdTools.newAdFieldString("nome", "Nome", 60));
     this.addField(AdTools.newAdFieldString("grupo", "Grupo - Cód.", 4).putKey());
     this.addField(AdTools.newAdFieldString("products_group.nome", "Grupo - Nome", 60));
     this.addField(AdTools.newAdFieldString("subgrupo", "SubGrupo - Cód.", 4).putKey());
