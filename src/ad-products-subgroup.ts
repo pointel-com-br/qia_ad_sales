@@ -1,6 +1,5 @@
 import {
   AdExpect,
-  AdFilter,
   AdModule,
   AdModules,
   AdRegBase,
@@ -25,11 +24,7 @@ export const register: AdRegBase = {
       module: AdModules.PRODUCTS_GROUP,
       registry: products_group_regy,
       alias: "products_group",
-      filters: [
-        new AdFilter({
-          linked: { name: "grupo", with: "codigo" },
-        }),
-      ],
+      filters: [{ linked: { name: "grupo", with: "codigo" } }],
     },
   ],
 };

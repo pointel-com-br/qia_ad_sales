@@ -1,11 +1,11 @@
 import {
   AdExpect,
-  AdFilter,
   AdModule,
   AdModules,
   AdRegBase,
   AdRegister,
   AdRegistry,
+  AdScope,
   AdTools,
 } from "admister";
 import { QinTool } from "qin_case";
@@ -23,23 +23,15 @@ export const register: AdRegBase = {
       module: AdModules.PRODUCTS_GROUP,
       registry: products_group_regy,
       alias: "products_group",
-      filters: [
-        new AdFilter({
-          linked: { name: "grupo", with: "codigo" },
-        }),
-      ],
+      filters: [{ linked: { name: "grupo", with: "codigo" } }],
     },
     {
       module: AdModules.PRODUCTS_SUBGROUP,
       registry: products_subgroup_regy,
       alias: "products_subgroup",
       filters: [
-        new AdFilter({
-          linked: { name: "grupo", with: "grupo" },
-        }),
-        new AdFilter({
-          linked: { name: "subgrupo", with: "codigo" },
-        }),
+        { linked: { name: "grupo", with: "grupo" } },
+        { linked: { name: "subgrupo", with: "codigo" } },
       ],
     },
   ],
@@ -55,7 +47,11 @@ export class AdProducts extends AdRegister {
     this.addField(AdTools.newAdFieldString("products_group.nome", "Grupo - Nome", 60));
     this.addField(AdTools.newAdFieldString("subgrupo", "SubGrupo - Cód.", 4).putKey());
     this.addField(AdTools.newAdFieldString("products_subgroup.nome", "SubGrupo - Nome", 60));
-    this.addDetail({ title: "Prices" });
+    this.addDetail({
+      module: AdModules.PRICES,
+      scopes: [AdScope.ALL],
+      filters: [{ linked: { name: "produto", with: "codigo" } }],
+    });
     this.prepare();
   }
 }
