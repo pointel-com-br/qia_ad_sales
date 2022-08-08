@@ -1,3 +1,3 @@
 export enum AdSalesParams {
-  SellerPriceTables = "SELLER_PRICE_TABLES",
+  AdSalesPriceTables = "ADSALES_PRICE_TABLES",
 }
