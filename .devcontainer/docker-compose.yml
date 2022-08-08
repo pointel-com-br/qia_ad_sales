@@ -1,9 +1,9 @@
 version: "3.9"
 services:
-  qcode_ser_qia_adpeople:
+  qcode_ser_qia_adsales:
     tty: true
     stdin_open: true
-    container_name: qcode_qia_adpeople
+    container_name: qcode_qia_adsales
     image: pointeldevs/stk_node
     volumes:
       - ${QIN_ROOT}/Work:/root
@@ -14,7 +14,7 @@ services:
       - QIN_ROOT=/root
     networks:
       - qin_net_stk
-    working_dir: /root/Code/qia_adpeople
+    working_dir: /root/Code/qia_adsales
 
 networks:
   qin_net_stk:
