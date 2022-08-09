@@ -47,6 +47,7 @@ export class AdProducts extends AdRegister {
     this.addField(AdTools.newAdFieldString("products_group.nome", "Grupo - Nome", 60));
     this.addField(AdTools.newAdFieldString("subgrupo", "SubGrupo - Cód.", 4).putKey());
     this.addField(AdTools.newAdFieldString("products_subgroup.nome", "SubGrupo - Nome", 60));
+    this.addField(AdTools.newAdFieldNumeric("ordem", "Orderm"));
     this.addDetail({
       module: AdModules.PRICES,
       scopes: [AdScope.ALL],
