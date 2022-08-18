@@ -2,8 +2,9 @@ import {
   AdExpect,
   AdModule,
   AdModules,
-  AdRegBase,
+  AdRegBased,
   AdRegister,
+  AdRegistier,
   AdRegistry,
   AdScope,
   AdTools,
@@ -14,10 +15,12 @@ import { registry as products_subgroup_regy } from "./ad-products-subgroup";
 
 const base = QinTool.qinpel.chief.loadConfig(QinTool.qinpel.our.names.QinBaseSelected);
 
-export const registry: AdRegistry = { base, name: "produtos" };
+export const registry: AdRegistry = { name: "produtos" };
 
-export const register: AdRegBase = {
-  registry,
+export const registier: AdRegistier = { base, registry };
+
+export const regBased: AdRegBased = {
+  registier,
   joins: [
     {
       module: AdModules.PRODUCTS_GROUP,
@@ -39,7 +42,7 @@ export const register: AdRegBase = {
 
 export class AdProducts extends AdRegister {
   public constructor(module: AdModule, expect: AdExpect) {
-    super(module, expect, register);
+    super(module, expect, regBased);
     this.addField(AdTools.newAdFieldString("codigo", "Código", 6).putKey());
     this.addField(AdTools.newAdFieldAtivo());
     this.addField(AdTools.newAdFieldString("nome", "Nome", 60));
