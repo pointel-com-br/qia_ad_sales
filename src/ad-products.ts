@@ -9,8 +9,6 @@ import {
   AdTools,
 } from "admister";
 import { QinTool } from "qin_case";
-import { registry as products_group_regy } from "./ad-products-group";
-import { registry as products_subgroup_regy } from "./ad-products-subgroup";
 
 const base = QinTool.qinpel.chief.loadConfig(QinTool.qinpel.our.names.QinBaseSelected);
 
@@ -23,13 +21,11 @@ export const regBased: AdRegBased = {
   joins: [
     {
       module: AdModules.PRODUCTS_GROUP,
-      registry: products_group_regy,
       alias: "products_group",
       filters: [{ linked: { name: "grupo", with: "codigo" } }],
     },
     {
       module: AdModules.PRODUCTS_SUBGROUP,
-      registry: products_subgroup_regy,
       alias: "products_subgroup",
       filters: [
         { linked: { name: "grupo", with: "grupo" } },

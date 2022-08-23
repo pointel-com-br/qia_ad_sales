@@ -8,7 +8,6 @@ import {
   AdTools,
 } from "admister";
 import { QinTool } from "qin_case";
-import { registry as products_regy } from "./ad-products";
 
 const base = QinTool.qinpel.chief.loadConfig(QinTool.qinpel.our.names.QinBaseSelected);
 
@@ -21,7 +20,6 @@ export const regBased: AdRegBased = {
   joins: [
     {
       module: AdModules.PRODUCTS,
-      registry: products_regy,
       alias: "products",
       filters: [{ linked: { name: "produto", with: "codigo" } }],
     },
