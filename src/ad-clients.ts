@@ -15,7 +15,29 @@ export const registry = AdModules.CLIENTS.registry;
 
 export const registier: AdRegistier = { base, registry };
 
-export const regBased: AdRegBased = { registier };
+export const regBased: AdRegBased = {
+  registier,
+  joins: [
+    {
+      module: AdModules.CITY,
+      alias: "city",
+      filters: [{ linked: { name: "cidade", with: "codigo" } }],
+    },
+    {
+      module: AdModules.DISTRICT,
+      alias: "district",
+      filters: [
+        { linked: { name: "cidade", with: "cidade" } },
+        { linked: { name: "bairro", with: "codigo" } },
+      ],
+    },
+    {
+      module: AdModules.REGION,
+      alias: "region",
+      filters: [{ linked: { name: "regiao", with: "codigo" } }],
+    },
+  ],
+};
 
 export class AdClients extends AdRegister {
   public constructor(module: AdModule, expect: AdExpect) {
@@ -94,6 +116,20 @@ export class AdClients extends AdRegister {
       AdTools.newAdFieldSuggestion("tipo_endereco", "Tipo Endereço", 18, typeContactSuggestions)
     );
     this.addField(AdTools.newAdFieldString("cep", "CEP", 10));
+    this.addField(AdTools.newAdFieldString("cidade", "Cidade - Cód.", 6));
+    this.addField(AdTools.newAdFieldString("city.nome", "Cidade - Nome", 60));
+    this.addField(AdTools.newAdFieldString("city.pais", "Cidade - Pais", 4));
+    this.addField(AdTools.newAdFieldString("city.estado", "Cidade - Estado", 4));
+    this.addField(AdTools.newAdFieldString("bairro", "Bairro - Cód.", 4));
+    this.addField(AdTools.newAdFieldString("district.nome", "Bairro - Nome", 60));
+    this.addField(AdTools.newAdFieldString("regiao", "Região - Cód.", 4));
+    this.addField(AdTools.newAdFieldString("region.nome", "Região - Nome", 60));
+    this.addField(
+      AdTools.newAdFieldSuggestion("logradouro", "Logradouro", 10, typeStreetSuggestions)
+    );
+    this.addField(AdTools.newAdFieldString("endereco", "Endereço", 80));
+    this.addField(AdTools.newAdFieldString("numero", "Número", 10));
+    this.addField(AdTools.newAdFieldString("complemento", "Complemento", 50));
     this.prepare();
   }
 }
@@ -115,3 +151,4 @@ const naturezaFieldItems = [
 
 const tratamentoSuggestions = ["Você", "Senhor", "Senhora"];
 const typeContactSuggestions = ["Pessoal", "Profissional"];
+const typeStreetSuggestions = ["R.", "AV.", "AL.", "LOT.", "TV.", "SER.", "ROD.", "PCA."];
