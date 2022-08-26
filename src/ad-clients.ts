@@ -19,6 +19,19 @@ export const regBased: AdRegBased = {
   registier,
   joins: [
     {
+      module: AdModules.PEOPLE_GROUP,
+      alias: "people_group",
+      filters: [{ linked: { name: "grupo", with: "codigo" } }],
+    },
+    {
+      module: AdModules.PEOPLE_SUBGROUP,
+      alias: "people_subgroup",
+      filters: [
+        { linked: { name: "grupo", with: "grupo" } },
+        { linked: { name: "subgrupo", with: "codigo" } },
+      ],
+    },
+    {
       module: AdModules.CITY,
       alias: "city",
       filters: [{ linked: { name: "cidade", with: "codigo" } }],
@@ -53,6 +66,11 @@ export class AdClients extends AdRegister {
     this.addField(AdTools.newAdFieldString("cnpjcpf", "CNPJ/CPF", 20));
     this.addField(AdTools.newAdFieldString("insestadual", "Ins. Estadual", 20));
     this.addField(AdTools.newAdFieldDate("aniversario", "Aniversário"));
+    this.addField(AdTools.newAdFieldString("grupo", "Grupo - Cód.", 2));
+    this.addField(AdTools.newAdFieldString("people_group.nome", "Grupo - Nome", 60));
+    this.addField(AdTools.newAdFieldString("subgrupo", "SubGrupo - Cód.", 3));
+    this.addField(AdTools.newAdFieldString("people_subgroup.nome", "SubGrupo - Nome", 60));
+    this.addField(AdTools.newAdFieldString("obs", "Obs", 120));
     this.addTab("Contato");
     this.addField(
       AdTools.newAdFieldSuggestion("tratamento", "Tratamento", 18, tratamentoSuggestions)
