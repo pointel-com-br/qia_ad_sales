@@ -148,6 +148,9 @@ export class AdClients extends AdRegister {
     this.addField(AdTools.newAdFieldString("endereco", "Endereço", 80));
     this.addField(AdTools.newAdFieldString("numero", "Número", 10));
     this.addField(AdTools.newAdFieldString("complemento", "Complemento", 50));
+    this.addTab("Vendas");
+    this.addField(AdTools.newAdFieldString("tabela_preco", "Tab. Preço", 6));
+    this.addField(AdTools.newAdFieldString("tabela_secundaria", "Tab. Secundária", 6));
     this.prepare();
   }
 }
