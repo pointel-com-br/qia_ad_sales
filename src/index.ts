@@ -1,5 +1,6 @@
 import { AdMenuItem, AdModules, menuStartUp } from "admister";
 import { AdClients } from "./ad-clients";
+import { AdPaymentTerms } from "./ad-payment-terms";
 import { AdPrices } from "./ad-prices";
 import { AdProducts } from "./ad-products";
 import { AdProductsGroup } from "./ad-products-group";
@@ -11,6 +12,7 @@ const items: AdMenuItem[] = [
   { module: AdModules.PRODUCTS_GROUP, register: AdProductsGroup },
   { module: AdModules.PRODUCTS_SUBGROUP, register: AdProductsSubGroup },
   { module: AdModules.PRICES, register: AdPrices },
+  { module: AdModules.PAYMENT_TERMS, register: AdPaymentTerms },
 ];
 
 menuStartUp(items).style.putAsBody();
