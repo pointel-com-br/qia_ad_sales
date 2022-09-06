@@ -49,6 +49,11 @@ export const regBased: AdRegBased = {
       alias: "region",
       filters: [{ linked: { name: "regiao", with: "codigo" } }],
     },
+    {
+      module: AdModules.PAYMENT_TERMS,
+      alias: "payment_terms",
+      filters: [{ linked: { name: "cond_pagamento", with: "codigo" } }],
+    },
   ],
 };
 
@@ -151,6 +156,10 @@ export class AdClients extends AdRegister {
     this.addTab("Vendas");
     this.addField(AdTools.newAdFieldString("tabela_preco", "Tab. Preço", 6));
     this.addField(AdTools.newAdFieldString("tabela_secundaria", "Tab. Secundária", 6));
+    this.addField(AdTools.newAdFieldString("cond_pagamento", "Cond. Pgto - Cód.", 4));
+    this.addField(AdTools.newAdFieldString("payment_terms.nome", "Cond. Pgto - Nome", 45));
+    this.addField(AdTools.newAdFieldString("credito", "Crédito", 6));
+    this.addField(AdTools.newAdFieldString("credito_obs", "Crédito - Obs", 250));
     this.prepare();
   }
 }
