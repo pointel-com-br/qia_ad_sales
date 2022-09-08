@@ -5,6 +5,7 @@ import { AdPrices } from "./ad-prices";
 import { AdProducts } from "./ad-products";
 import { AdProductsGroup } from "./ad-products-group";
 import { AdProductsSubGroup } from "./ad-products-subgroup";
+import { AdSales } from "./ad-sales";
 
 const items: AdMenuItem[] = [
   { module: AdModules.CLIENTS, register: AdClients },
@@ -13,6 +14,7 @@ const items: AdMenuItem[] = [
   { module: AdModules.PRODUCTS_SUBGROUP, register: AdProductsSubGroup },
   { module: AdModules.PRICES, register: AdPrices },
   { module: AdModules.PAYMENT_TERMS, register: AdPaymentTerms },
+  { module: AdModules.SALES, register: AdSales },
 ];
 
 menuStartUp(items).style.putAsBody();
