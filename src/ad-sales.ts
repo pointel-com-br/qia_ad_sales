@@ -35,6 +35,9 @@ export class AdSales extends AdRegister {
   public constructor(module: AdModule, expect: AdExpect) {
     super(module, expect, regBased);
     this.addField(AdTools.newAdFieldString("codigo", "Código", 10).putKey());
+    this.addField(AdTools.newAdFieldDate("emitido_data", "Emitido Em"));
+    this.addField(AdTools.newAdFieldBoolean("enviado", "Enviado"));
+    this.addField(AdTools.newAdFieldDate("enviado_data", "Enviado Em"));
     this.addField(AdTools.newAdFieldString("cliente", "Cliente - Cod.", 8));
     this.addField(AdTools.newAdFieldString("clients.nome", "Cliente - Nome.", 60));
     this.addField(AdTools.newAdFieldString("cond_pagamento", "Cond. Pgto - Cod.", 4));
