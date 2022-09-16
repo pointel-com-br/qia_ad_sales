@@ -42,6 +42,7 @@ export class AdSales extends AdRegister {
     this.addField(AdTools.newAdFieldString("clients.nome", "Cliente - Nome.", 60));
     this.addField(AdTools.newAdFieldString("cond_pagamento", "Cond. Pgto - Cod.", 4));
     this.addField(AdTools.newAdFieldString("payment_terms.nome", "Cond. Pgto - Nome.", 45));
+    this.addField(AdTools.newAdFieldString("obs", "Obs", 400));
     this.prepare();
   }
 }
