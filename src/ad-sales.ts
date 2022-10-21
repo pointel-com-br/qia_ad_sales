@@ -8,7 +8,8 @@ import {
   AdScope,
   AdTools,
 } from "admister";
-import { QinTool } from "qin_case";
+import { QinButton, QinLabel, QinTool } from "qin_case";
+import { QinAction } from "qin_soul";
 
 const base = QinTool.qinpel.chief.loadConfig(QinTool.qinpel.our.names.QinBaseSelected);
 
@@ -33,6 +34,11 @@ export const regBased: AdRegBased = {
 };
 
 export class AdSales extends AdRegister {
+  private _qinEnviar = new QinButton({ label: new QinLabel("Enviar") });
+  private _actEnviar: QinAction = (_) => {
+    console.log("Send a Sales Items");
+  };
+
   public constructor(module: AdModule, expect: AdExpect) {
     super(module, expect, regBased);
     this.addField(AdTools.newAdFieldString("codigo", "Código", 10).putKey());
@@ -58,6 +64,8 @@ export class AdSales extends AdRegister {
       },
       "Itens"
     );
+    this._qinEnviar.addActionMain(this._actEnviar);
+    this.addAct(this._qinEnviar);
     this.prepare();
   }
 }
