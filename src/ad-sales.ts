@@ -6,7 +6,7 @@ import {
   AdRegister,
   AdRegistier,
   AdScope,
-  AdTools,
+  AdTools
 } from "admister";
 import { QinButton, QinLabel, QinTool } from "qin_case";
 import { QinAction } from "qin_soul";
@@ -36,7 +36,33 @@ export const regBased: AdRegBased = {
 export class AdSales extends AdRegister {
   private _qinEnviar = new QinButton({ label: new QinLabel("Enviar") });
   private _actEnviar: QinAction = (_) => {
-    console.log("Send a Sales Items");
+    if (!this.hasSelectedNoticed()) {
+      this.qinpel.jobbed.showError(
+        "You must have a selected sales to send.",
+        "{qia_adsales}(ErrCode-000003)"
+      );
+      return;
+    }
+    const codigo = this.model.getFieldByName("codigo").value;
+    this.qinpel.talk.giz
+      .run({
+        exec: "adsales/ad-sales-send.giz",
+        args: [base, codigo],
+      })
+      .then((token) => {
+        this.qinpel.talk.issued
+          .askWhenDone({
+            token,
+            askResultCoded: true,
+            askResultLines: true,
+          })
+          .then((results) => {
+            console.log(results.resultCoded);
+            console.log(results.resultLines);
+          })
+          .catch((err) => this.qinpel.jobbed.statusError(err, "{qia_adsales}(ErrCode-000002)"));
+      })
+      .catch((err) => this.qinpel.jobbed.statusError(err, "{qia_adsales}(ErrCode-000001)"));
   };
 
   public constructor(module: AdModule, expect: AdExpect) {

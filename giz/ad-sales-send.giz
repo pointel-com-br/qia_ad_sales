@@ -1,0 +1,104 @@
+base = args[0]
+codigoPrePedido = args[1]
+
+def helped = giz.getHelp(base)
+
+def selectPrePedido = '''
+SELECT
+  p.emitido_data, p.cliente, clientes.nome, clientes.fantasia, 
+  condicoes_pagamento.nome, p.cond_pagamento, p.obs, ' ' AS totQtd, 
+  p.subtotal, p.out_desc, p.out_acresc, p.total, 
+  p.representante, p.enviado
+FROM 
+  prepedidos AS p
+JOIN pessoas AS clientes ON
+  clientes.codigo = p.cliente
+JOIN condicoes_pagamento ON
+  condicoes_pagamento.codigo = p.cond_pagamento
+WHERE
+  p.codigo = ?
+'''
+def dataPrePedido = helped.selectRow(selectPrePedido, codigoPrePedido)
+
+def enviado = dataPrePedido[13]
+
+// Switch to equals when release to production
+if (enviado != 'S') {
+  throw new Exception("Este PréPedido já foi enviado.")
+}
+
+def arquivo = StringBuilder.newInstance()
+arquivo << codigoPrePedido << '\n'
+arquivo << dataPrePedido[0].toString().replace("null", " ") << '\n'
+arquivo << dataPrePedido[1].toString().replace("null", " ") << '\n'
+arquivo << dataPrePedido[2].toString().replace("null", " ") << '\n'
+arquivo << dataPrePedido[3].toString().replace("null", " ") << '\n'
+arquivo << dataPrePedido[4].toString().replace("null", " ") << '\n'
+arquivo << dataPrePedido[5].toString().replace("null", " ") << '\n'
+arquivo << dataPrePedido[6].toString().replace("null", " ") << '\n'
+arquivo << dataPrePedido[7].toString().replace("null", " ") << '\n'
+arquivo << dataPrePedido[8].toString().replace("null", " ") << '\n'
+arquivo << dataPrePedido[9].toString().replace("null", " ") << '\n'
+arquivo << dataPrePedido[10].toString().replace("null", " ") << '\n'
+arquivo << dataPrePedido[11].toString().replace("null", " ") << '\n'
+
+def representante = dataPrePedido[12]
+
+def mobVendedor = helped.selectOne("SELECT codigo FROM mobile_vendedores WHERE representante = ?", representante)
+
+if (!mobVendedor) {
+  throw new Exception("Usuário Não está cadastrado no mobile vendedores")
+}
+
+def selectItens = '''
+SELECT
+  i.produto, produtos.nome, produtos.unidade, 
+  i.quantidade, i.preco, i.desconto_per, i.desconto,
+  i.subtotal, i.total, i.obs 
+FROM
+  itens_prepedidos AS i
+JOIN produtos ON 
+  produtos.codigo = i.produto
+WHERE
+  i.prepedido = ? 
+ORDER BY 
+  i.codigo
+'''
+
+def dataItens = helped.select(selectItens, codigoPrePedido)
+
+if (!dataItens) {
+  throw new Exception("Não é permitido enviar um PréPedido sem itens");
+}
+
+arquivo << '<Itens>' << '\n'
+for (item in dataItens) {
+  arquivo << item[0].toString().replace("null", " ").replace("-", "_") << '-'
+  arquivo << item[1].toString().replace("null", " ").replace("-", "_") << '-'
+  arquivo << item[2].toString().replace("null", " ").replace("-", "_") << '-'
+  arquivo << item[3].toString().replace("null", " ").replace("-", "_") << '-'
+  arquivo << item[4].toString().replace("null", " ").replace("-", "_") << '-'
+  arquivo << item[5].toString().replace("null", " ").replace("-", "_") << '-'
+  arquivo << item[6].toString().replace("null", " ").replace("-", "_") << '-'
+  arquivo << item[7].toString().replace("null", " ").replace("-", "_") << '-'
+  arquivo << item[8].toString().replace("null", " ").replace("-", "_") << '-'
+  arquivo << item[9].toString().replace("null", " ").replace("-", "_") << '\n'
+}
+arquivo << '</Itens>' << '\n'
+
+try {
+  helped.begin()
+
+  def insertMobArquivos = "INSERT INTO mobile_arquivos (vendedor, nome, tipo, arquivo) VALUES (?, ?, ?, ?)"
+  helped.update(insertMobArquivos, mobVendedor, codigoPrePedido + '.ped', 'B', arquivo.toString())
+
+  def updatePrePedidos = "UPDATE prepedidos SET enviado = 'S', enviado_data = CURRENT_DATE, enviado_hora = CURRENT_TIME WHERE codigo = ?";
+  helped.update(updatePrePedidos, codigoPrePedido)
+  
+  helped.commit()
+} catch (Exception e) {
+  helped.rollback()
+  throw e
+}
+
+return 0
