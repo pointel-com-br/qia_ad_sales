@@ -1,3 +1,6 @@
+import java.text.DecimalFormat
+numberFormat = new DecimalFormat("#0.00")
+
 base = args[0]
 codigoPrePedido = args[1]
 
@@ -6,7 +9,7 @@ def helped = giz.getHelp(base)
 def selectPrePedido = '''
 SELECT
   p.emitido_data, p.cliente, clientes.nome, clientes.fantasia, 
-  condicoes_pagamento.nome, p.cond_pagamento, p.obs, ' ' AS totQtd, 
+  condicoes_pagamento.nome, p.cond_pagamento, p.obs, ' ' AS total_quantidade, 
   p.subtotal, p.out_desc, p.out_acresc, p.total, 
   p.representante, p.enviado
 FROM 
@@ -18,33 +21,58 @@ JOIN condicoes_pagamento ON
 WHERE
   p.codigo = ?
 '''
-def dataPrePedido = helped.selectRow(selectPrePedido, codigoPrePedido)
+def resultPrePedido = helped.selectRow(selectPrePedido, codigoPrePedido)
 
-def enviado = dataPrePedido[13]
+def formatField(fieldValue) {
+  if (fieldValue) {
+    if (fieldValue instanceof BigDecimal) {
+      return numberFormat.format(fieldValue)
+    } else {
+      return fieldValue.toString()
+    }
+  } else {
+    return ""
+  }
+}
+
+def dataPrePedido = [
+  emitido_data: formatField(resultPrePedido[0]),
+  cliente: formatField(resultPrePedido[1]),
+  clientes_nome: formatField(resultPrePedido[2]),
+  clientes_fantasia: formatField(resultPrePedido[3]),
+  condicoes_pagamento_nome: formatField(resultPrePedido[4]),
+  cond_pagamento: formatField(resultPrePedido[5]),
+  obs: formatField(resultPrePedido[6]),
+  total_quantidade: formatField(resultPrePedido[7]),
+  subtotal: formatField(resultPrePedido[8]),
+  out_desc: formatField(resultPrePedido[9]),
+  out_acresc: formatField(resultPrePedido[10]),
+  total: formatField(resultPrePedido[11]),
+  representante: formatField(resultPrePedido[12]),
+  enviado: formatField(resultPrePedido[13])
+]
 
 // Switch to equals when release to production
-if (enviado != 'S') {
+if (dataPrePedido.enviado != 'S') {
   throw new Exception("Este PréPedido já foi enviado.")
 }
 
 def arquivo = StringBuilder.newInstance()
 arquivo << codigoPrePedido << '\n'
-arquivo << dataPrePedido[0].toString().replace("null", " ") << '\n'
-arquivo << dataPrePedido[1].toString().replace("null", " ") << '\n'
-arquivo << dataPrePedido[2].toString().replace("null", " ") << '\n'
-arquivo << dataPrePedido[3].toString().replace("null", " ") << '\n'
-arquivo << dataPrePedido[4].toString().replace("null", " ") << '\n'
-arquivo << dataPrePedido[5].toString().replace("null", " ") << '\n'
-arquivo << dataPrePedido[6].toString().replace("null", " ") << '\n'
-arquivo << dataPrePedido[7].toString().replace("null", " ") << '\n'
-arquivo << dataPrePedido[8].toString().replace("null", " ") << '\n'
-arquivo << dataPrePedido[9].toString().replace("null", " ") << '\n'
-arquivo << dataPrePedido[10].toString().replace("null", " ") << '\n'
-arquivo << dataPrePedido[11].toString().replace("null", " ") << '\n'
+arquivo << dataPrePedido.emitido_data << '\n'
+arquivo << dataPrePedido.cliente << '\n'
+arquivo << dataPrePedido.clientes_nome << '\n'
+arquivo << dataPrePedido.clientes_fantasia << '\n'
+arquivo << dataPrePedido.condicoes_pagamento_nome << '\n'
+arquivo << dataPrePedido.cond_pagamento << '\n'
+arquivo << dataPrePedido.obs << '\n'
+arquivo << dataPrePedido.total_quantidade << '\n'
+arquivo << dataPrePedido.subtotal << '\n'
+arquivo << dataPrePedido.out_desc << '\n'
+arquivo << dataPrePedido.out_acresc << '\n'
+arquivo << dataPrePedido.total << '\n'
 
-def representante = dataPrePedido[12]
-
-def mobVendedor = helped.selectOne("SELECT codigo FROM mobile_vendedores WHERE representante = ?", representante)
+def mobVendedor = helped.selectOne("SELECT codigo FROM mobile_vendedores WHERE representante = ?", dataPrePedido.representante)
 
 if (!mobVendedor) {
   throw new Exception("Usuário Não está cadastrado no mobile vendedores")
