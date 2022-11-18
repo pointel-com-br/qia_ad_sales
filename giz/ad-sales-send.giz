@@ -1,5 +1,6 @@
 import java.text.DecimalFormat
-numberFormat = new DecimalFormat("#0.00")
+
+numberFormat = new DecimalFormat('#0.00')
 
 base = args[0]
 codigoPrePedido = args[1]
@@ -8,11 +9,11 @@ def helped = giz.getHelp(base)
 
 def selectPrePedido = '''
 SELECT
-  p.emitido_data, p.cliente, clientes.nome, clientes.fantasia, 
-  condicoes_pagamento.nome, p.cond_pagamento, p.obs, ' ' AS total_quantidade, 
-  p.subtotal, p.out_desc, p.out_acresc, p.total, 
+  p.emitido_data, p.cliente, clientes.nome, clientes.fantasia,
+  condicoes_pagamento.nome, p.cond_pagamento, p.obs, ' ' AS total_quantidade,
+  p.subtotal, p.out_desc, p.out_acresc, p.total,
   p.representante, p.enviado
-FROM 
+FROM
   prepedidos AS p
 JOIN pessoas AS clientes ON
   clientes.codigo = p.cliente
@@ -31,7 +32,7 @@ def formatField(fieldValue) {
       return fieldValue.toString()
     }
   } else {
-    return ""
+    return ''
   }
 }
 
@@ -54,7 +55,7 @@ def dataPrePedido = [
 
 // Switch to equals when release to production
 if (dataPrePedido.enviado != 'S') {
-  throw new Exception("Este PréPedido já foi enviado.")
+  throw new Exception('Este PréPedido já foi enviado.')
 }
 
 def arquivo = StringBuilder.newInstance()
@@ -72,57 +73,73 @@ arquivo << dataPrePedido.out_desc << '\n'
 arquivo << dataPrePedido.out_acresc << '\n'
 arquivo << dataPrePedido.total << '\n'
 
-def mobVendedor = helped.selectOne("SELECT codigo FROM mobile_vendedores WHERE representante = ?", dataPrePedido.representante)
+def selectMobVendedor = "SELECT codigo FROM mobile_vendedores WHERE representante = ?"
+def mobVendedor = helped.selectOne(selectMobVendedor, dataPrePedido.representante)
 
 if (!mobVendedor) {
-  throw new Exception("Usuário Não está cadastrado no mobile vendedores")
+  throw new Exception('Usuário Não está cadastrado no mobile vendedores')
 }
 
 def selectItens = '''
 SELECT
-  i.produto, produtos.nome, produtos.unidade, 
+  i.produto, produtos.nome, produtos.unidade,
   i.quantidade, i.preco, i.desconto_per, i.desconto,
-  i.subtotal, i.total, i.obs 
+  i.subtotal, i.total, i.obs
 FROM
   itens_prepedidos AS i
-JOIN produtos ON 
+JOIN produtos ON
   produtos.codigo = i.produto
 WHERE
-  i.prepedido = ? 
-ORDER BY 
+  i.prepedido = ?
+ORDER BY
   i.codigo
 '''
 
-def dataItens = helped.select(selectItens, codigoPrePedido)
+def resultItens = helped.select(selectItens, codigoPrePedido)
 
-if (!dataItens) {
-  throw new Exception("Não é permitido enviar um PréPedido sem itens");
+if (!resultItens) {
+  throw new Exception('Não é permitido enviar um PréPedido sem itens')
 }
 
 arquivo << '<Itens>' << '\n'
-for (item in dataItens) {
-  arquivo << item[0].toString().replace("null", " ").replace("-", "_") << '-'
-  arquivo << item[1].toString().replace("null", " ").replace("-", "_") << '-'
-  arquivo << item[2].toString().replace("null", " ").replace("-", "_") << '-'
-  arquivo << item[3].toString().replace("null", " ").replace("-", "_") << '-'
-  arquivo << item[4].toString().replace("null", " ").replace("-", "_") << '-'
-  arquivo << item[5].toString().replace("null", " ").replace("-", "_") << '-'
-  arquivo << item[6].toString().replace("null", " ").replace("-", "_") << '-'
-  arquivo << item[7].toString().replace("null", " ").replace("-", "_") << '-'
-  arquivo << item[8].toString().replace("null", " ").replace("-", "_") << '-'
-  arquivo << item[9].toString().replace("null", " ").replace("-", "_") << '\n'
+
+for (item in resultItens) {
+  def dataItem = [
+    produto: formatField(item[0]).replace('-', '_'),
+    produtos_nome: formatField(item[1]).replace('-', '_'),
+    produtos_unidade: formatField(item[2]).replace('-', '_'),
+    quantidade: formatField(item[3]).replace('-', '_'),
+    preco: formatField(item[4]).replace('-', '_'),
+    desconto_per: formatField(item[5]).replace('-', '_'),
+    desconto: formatField(item[6]).replace('-', '_'),
+    subtotal: formatField(item[7]).replace('-', '_'),
+    total: formatField(item[8]).replace('-', '_'),
+    obs: formatField(item[9]).replace('-', '_')
+  ]
+
+  arquivo << dataItem.produto << '-'
+  arquivo << dataItem.produtos_nome << '-'
+  arquivo << dataItem.produtos_unidade << '-'
+  arquivo << dataItem.quantidade << '-'
+  arquivo << dataItem.preco << '-'
+  arquivo << dataItem.desconto_per << '-'
+  arquivo << dataItem.desconto << '-'
+  arquivo << dataItem.subtotal << '-'
+  arquivo << dataItem.total << '-'
+  arquivo << dataItem.obs << '\n'
 }
+
 arquivo << '</Itens>' << '\n'
 
 try {
   helped.begin()
 
-  def insertMobArquivos = "INSERT INTO mobile_arquivos (vendedor, nome, tipo, arquivo) VALUES (?, ?, ?, ?)"
+  def insertMobArquivos = 'INSERT INTO mobile_arquivos (vendedor, nome, tipo, arquivo) VALUES (?, ?, ?, ?)'
   helped.update(insertMobArquivos, mobVendedor, codigoPrePedido + '.ped', 'B', arquivo.toString())
 
-  def updatePrePedidos = "UPDATE prepedidos SET enviado = 'S', enviado_data = CURRENT_DATE, enviado_hora = CURRENT_TIME WHERE codigo = ?";
+  def updatePrePedidos = "UPDATE prepedidos SET enviado = 'S', enviado_data = CURRENT_DATE, enviado_hora = CURRENT_TIME WHERE codigo = ?"
   helped.update(updatePrePedidos, codigoPrePedido)
-  
+
   helped.commit()
 } catch (Exception e) {
   helped.rollback()
