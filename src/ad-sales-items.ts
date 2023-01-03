@@ -5,7 +5,7 @@ import {
   AdRegBased,
   AdRegister,
   AdRegistier,
-  AdTools,
+  AdTools
 } from "admister";
 import { QinTool } from "qin_case";
 
@@ -58,7 +58,7 @@ export class AdSalesItems extends AdRegister {
       AdTools.newAdFieldString("prepedido", "PréPedido", 10).putKey().putReadOnly()
     );
     this.addField(AdTools.newAdFieldString("codigo", "Código", 4).putKey());
-    this.addField(AdTools.newAdFieldString("produto", "Produto - Cód.", 4));
+    this.addField(AdTools.newAdFieldString("produto", "Produto - Cód.", 6));
     this.addField(AdTools.newAdFieldString("products.nome", "Produto - Nome.", 60));
     this.addField(
       AdTools.newAdFieldNumeric("quantidade", "Quantidade").putOnChanged(this._updateValues)
