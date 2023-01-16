@@ -53,8 +53,7 @@ def dataPrePedido = [
   enviado: formatField(resultPrePedido[13])
 ]
 
-// Switch to equals when release to production
-if (dataPrePedido.enviado != 'S') {
+if (dataPrePedido.enviado == 'S') {
   throw new Exception('Este PréPedido já foi enviado.')
 }
 
