@@ -53,16 +53,22 @@ export class AdSales extends AdRegister {
         this.qinpel.talk.issued
           .askWhenDone({
             token,
-            askResultCoded: true,
-            askResultLines: true,
+            askHasOut: true,
+            askOutLines: true,
+            askHasErr: true,
+            askErrLines: true,
           })
           .then((results) => {
-            console.log(results.resultCoded);
-            console.log(results.resultLines);
+            if (results.hasOut) {
+              this.qinpel.jobbed.showInfo(results.outLines, "{qia_adsales}(ErrCode-000005)");
+            }
+            if (results.hasErr) {
+              this.qinpel.jobbed.showError(results.errLines, "{qia_adsales}(ErrCode-000004)");
+            }
           })
-          .catch((err) => this.qinpel.jobbed.statusError(err, "{qia_adsales}(ErrCode-000002)"));
+          .catch((err) => this.qinpel.jobbed.showError(err, "{qia_adsales}(ErrCode-000002)"));
       })
-      .catch((err) => this.qinpel.jobbed.statusError(err, "{qia_adsales}(ErrCode-000001)"));
+      .catch((err) => this.qinpel.jobbed.showError(err, "{qia_adsales}(ErrCode-000001)"));
   };
 
   public constructor(module: AdModule, expect: AdExpect) {

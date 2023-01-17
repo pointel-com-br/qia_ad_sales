@@ -54,7 +54,7 @@ def dataPrePedido = [
 ]
 
 if (dataPrePedido.enviado == 'S') {
-  throw new Exception('Este PréPedido já foi enviado.')
+  throw new Exception('This sales was already sent.')
 }
 
 def arquivo = StringBuilder.newInstance()
@@ -76,7 +76,7 @@ def selectMobVendedor = "SELECT codigo FROM mobile_vendedores WHERE representant
 def mobVendedor = helped.selectOne(selectMobVendedor, dataPrePedido.representante)
 
 if (!mobVendedor) {
-  throw new Exception('Usuário Não está cadastrado no mobile vendedores')
+  throw new Exception('User is NOT registered on mobile sales.')
 }
 
 def selectItens = '''
@@ -97,7 +97,7 @@ ORDER BY
 def resultItens = helped.select(selectItens, codigoPrePedido)
 
 if (!resultItens) {
-  throw new Exception('Não é permitido enviar um PréPedido sem itens')
+  throw new Exception('It is not allowed to send a sales without items.')
 }
 
 arquivo << '<Itens>' << '\n'
@@ -145,4 +145,5 @@ try {
   throw e
 }
 
+print("Sale sent successfully!")
 return 0
