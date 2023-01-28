@@ -1,9 +1,20 @@
-import java.text.DecimalFormat
-
-numberFormat = new DecimalFormat('#0.00')
-
 base = args[0]
 codigoPrePedido = args[1]
+
+import java.text.DecimalFormat
+numberFormat = new DecimalFormat('#0.00')
+
+def formatField(fieldValue) {
+  if (fieldValue != null) {
+    if (fieldValue instanceof BigDecimal) {
+      return numberFormat.format(fieldValue)
+    } else {
+      return fieldValue.toString()
+    }
+  } else {
+    return ''
+  }
+}
 
 def helped = giz.getHelp(base)
 
@@ -23,18 +34,6 @@ WHERE
   p.codigo = ?
 '''
 def resultPrePedido = helped.selectRow(selectPrePedido, codigoPrePedido)
-
-def formatField(fieldValue) {
-  if (fieldValue) {
-    if (fieldValue instanceof BigDecimal) {
-      return numberFormat.format(fieldValue)
-    } else {
-      return fieldValue.toString()
-    }
-  } else {
-    return ''
-  }
-}
 
 def dataPrePedido = [
   emitido_data: formatField(resultPrePedido[0]),
