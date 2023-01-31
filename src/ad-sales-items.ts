@@ -33,23 +33,23 @@ export class AdSalesItems extends AdRegister {
     let preco = this.model.getFieldByName("preco").value;
     if (!preco) preco = 0.0;
     let subtotal = quantidade * preco;
-    this.model.getFieldByName("subtotal").value = subtotal;
+    this.model.getFieldByName("subtotal").value = subtotal.toFixed(2);
     let desconto = 0.0;
     let desconto_per = this.model.getFieldByName("desconto_per").value;
     if (!desconto_per) desconto_per = 0.0;
     if (desconto_per > 0.0) {
       desconto = (subtotal * desconto_per) / 100.0;
     }
-    this.model.getFieldByName("desconto").value = desconto;
+    this.model.getFieldByName("desconto").value = desconto.toFixed(2);
     let acrescimo = 0.0;
     let acrescimo_per = this.model.getFieldByName("acrescimo_per").value;
     if (!acrescimo_per) acrescimo_per = 0.0;
     if (acrescimo_per > 0.0) {
       acrescimo = (subtotal * acrescimo_per) / 100.0;
     }
-    this.model.getFieldByName("acrescimo").value = acrescimo;
+    this.model.getFieldByName("acrescimo").value = acrescimo.toFixed(2);
     let total = subtotal + acrescimo - desconto;
-    this.model.getFieldByName("total").value = total;
+    this.model.getFieldByName("total").value = total.toFixed(2);
   };
 
   public constructor(module: AdModule, expect: AdExpect) {
