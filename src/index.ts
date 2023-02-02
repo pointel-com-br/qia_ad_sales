@@ -19,4 +19,4 @@ const items: AdMenuItem[] = [
   { module: AdModules.SALES_ITEMS, register: AdSalesItems },
 ];
 
-menuStartUp(items).style.putAsBody();
+menuStartUp(items).putAsBody();
