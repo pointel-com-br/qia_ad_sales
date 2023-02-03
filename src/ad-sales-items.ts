@@ -3,11 +3,15 @@ import {
   AdModule,
   AdModules,
   AdRegBased,
+  AdRegCalls,
   AdRegister,
   AdRegistier,
+  AdSelect,
   AdTools
 } from "admister";
 import { QinTool } from "qin_case";
+import { QinNature } from "qin_soul";
+import { registier as regPrices } from "./ad-prices";
 
 const base = QinTool.qinpel.chief.loadConfig(QinTool.qinpel.our.names.QinBaseSelected);
 
@@ -27,7 +31,33 @@ export const regBased: AdRegBased = {
 };
 
 export class AdSalesItems extends AdRegister {
+  public constructor(module: AdModule, expect: AdExpect) {
+    super(module, expect, regBased);
+    this.addFields([
+      AdTools.newAdFieldString("prepedido", "PréPedido", 10).putKey().putReadOnly(),
+      AdTools.newAdFieldString("codigo", "Código", 4).putKey(),
+      AdTools.newAdFieldString("produto", "Produto - Cód.", 6).putOnExited(this._updatePrice),
+      AdTools.newAdFieldString("products.nome", "Produto - Nome.", 60),
+      AdTools.newAdFieldNumeric("quantidade", "Quantidade").putOnExited(this._updateValues),
+      AdTools.newAdFieldString("tabela", "Tabela", 6)
+        .putOnEntered(this._tablePriorValueSaver)
+        .putOnExited(this._updatePrice),
+      AdTools.newAdFieldNumeric("preco", "Preço").putOnExited(this._updateValues),
+      AdTools.newAdFieldNumeric("subtotal", "SubTotal").putReadOnly(),
+      AdTools.newAdFieldNumeric("desconto_per", "% Desconto").putOnExited(this._updateValues),
+      AdTools.newAdFieldNumeric("desconto", "Desconto").putReadOnly(),
+      AdTools.newAdFieldNumeric("acrescimo_per", "% Acréscimo").putOnExited(this._updateValues),
+      AdTools.newAdFieldNumeric("acrescimo", "Acréscimo").putReadOnly(),
+      AdTools.newAdFieldNumeric("total", "Total").putReadOnly(),
+      AdTools.newAdFieldString("obs", "Obs", 100),
+    ]);
+    this.prepare();
+  }
+
   private _updateValues = (_: any) => {
+    if (!this.isRegModeInsert() && !this.isRegModeMutate()) {
+      return;
+    }
     let quantidade = this.model.getFieldByName("quantidade").value;
     if (!quantidade) quantidade = 0.0;
     let preco = this.model.getFieldByName("preco").value;
@@ -52,30 +82,48 @@ export class AdSalesItems extends AdRegister {
     this.model.getFieldByName("total").value = total.toFixed(2);
   };
 
-  public constructor(module: AdModule, expect: AdExpect) {
-    super(module, expect, regBased);
-    this.addField(
-      AdTools.newAdFieldString("prepedido", "PréPedido", 10).putKey().putReadOnly()
-    );
-    this.addField(AdTools.newAdFieldString("codigo", "Código", 4).putKey());
-    this.addField(AdTools.newAdFieldString("produto", "Produto - Cód.", 6));
-    this.addField(AdTools.newAdFieldString("products.nome", "Produto - Nome.", 60));
-    this.addField(
-      AdTools.newAdFieldNumeric("quantidade", "Quantidade").putOnChanged(this._updateValues)
-    );
-    this.addField(AdTools.newAdFieldString("tabela", "Tabela", 6));
-    this.addField(AdTools.newAdFieldNumeric("preco", "Preço").putOnChanged(this._updateValues));
-    this.addField(AdTools.newAdFieldNumeric("subtotal", "SubTotal").putReadOnly());
-    this.addField(
-      AdTools.newAdFieldNumeric("desconto_per", "% Desconto").putOnChanged(this._updateValues)
-    );
-    this.addField(AdTools.newAdFieldNumeric("desconto", "Desconto").putReadOnly());
-    this.addField(
-      AdTools.newAdFieldNumeric("acrescimo_per", "% Acréscimo").putOnChanged(this._updateValues)
-    );
-    this.addField(AdTools.newAdFieldNumeric("acrescimo", "Acréscimo").putReadOnly());
-    this.addField(AdTools.newAdFieldNumeric("total", "Total").putReadOnly());
-    this.addField(AdTools.newAdFieldString("obs", "Obs", 100));
-    this.prepare();
+  private _tablePriorValue = null;
+
+  private _tablePriorValueSaver = (_: any) => {
+    this._tablePriorValue = this.model.getFieldByName("tabela").value;
+  };
+
+  private _updatePrice = (_: any) => {
+    if (!this.isRegModeInsert() && !this.isRegModeMutate()) {
+      return;
+    }
+    let produto = this.model.getFieldByName("produto").value;
+    let tabela = this.model.getFieldByName("tabela").value;
+    if (produto && tabela && tabela !== this._tablePriorValue) {
+      AdRegCalls.selectOne(this.makeUpdatePriceQuery(produto, tabela))
+        .then((res) => {
+          this.model.getFieldByName("preco").value = res;
+          this._updateValues(null);
+        })
+        .catch((err) => this.qinpel.jobbed.showError(err, "{qia_ad_sales}(ErrCode-000006)"));
+    }
+  };
+
+  private makeUpdatePriceQuery(produto: any, tabela: any): AdSelect {
+    return {
+      registier: regPrices,
+      fields: [{ name: "valor", type: QinNature.NUMERIC }],
+      filters: [
+        {
+          valued: {
+            name: "produto",
+            type: QinNature.CHARS,
+            data: produto,
+          },
+        },
+        {
+          valued: {
+            name: "tabela",
+            type: QinNature.CHARS,
+            data: tabela,
+          },
+        },
+      ],
+    };
   }
 }

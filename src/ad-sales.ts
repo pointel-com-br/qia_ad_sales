@@ -39,7 +39,7 @@ export class AdSales extends AdRegister {
     if (!this.hasSelectedNoticed()) {
       this.qinpel.jobbed.showError(
         "You must have a selected sales to send.",
-        "{qia_adsales}(ErrCode-000003)"
+        "{qia_ad_sales}(ErrCode-000003)"
       );
       return;
     }
@@ -60,15 +60,15 @@ export class AdSales extends AdRegister {
           })
           .then((results) => {
             if (results.hasOut) {
-              this.qinpel.jobbed.showInfo(results.outLines, "{qia_adsales}(ErrCode-000005)");
+              this.qinpel.jobbed.showInfo(results.outLines, "{qia_ad_sales}(ErrCode-000005)");
             }
             if (results.hasErr) {
-              this.qinpel.jobbed.showError(results.errLines, "{qia_adsales}(ErrCode-000004)");
+              this.qinpel.jobbed.showError(results.errLines, "{qia_ad_sales}(ErrCode-000004)");
             }
           })
-          .catch((err) => this.qinpel.jobbed.showError(err, "{qia_adsales}(ErrCode-000002)"));
+          .catch((err) => this.qinpel.jobbed.showError(err, "{qia_ad_sales}(ErrCode-000002)"));
       })
-      .catch((err) => this.qinpel.jobbed.showError(err, "{qia_adsales}(ErrCode-000001)"));
+      .catch((err) => this.qinpel.jobbed.showError(err, "{qia_ad_sales}(ErrCode-000001)"));
   };
 
   public constructor(module: AdModule, expect: AdExpect) {
