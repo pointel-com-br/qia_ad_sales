@@ -79,6 +79,7 @@ export class AdSales extends AdRegister {
     this.addField(AdTools.newAdFieldDate("enviado_data", "Enviado Em").putReadOnly());
     this.addField(AdTools.newAdFieldString("cliente", "Cliente - Cod.", 8));
     this.addField(AdTools.newAdFieldString("clients.nome", "Cliente - Nome.", 60));
+    this.addField(AdTools.newAdFieldString("clients.fantasia", "Cliente - Fantasia.", 60));
     this.addField(AdTools.newAdFieldNumeric("out_desc", "Out. Descontos"));
     this.addField(AdTools.newAdFieldNumeric("out_acresc", "Out. Acréscimos"));
     this.addField(AdTools.newAdFieldNumeric("subtotal", "SubTotal").putReadOnly());
