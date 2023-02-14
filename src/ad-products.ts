@@ -6,7 +6,7 @@ import {
   AdRegister,
   AdRegistier,
   AdScope,
-  AdTools,
+  AdTools
 } from "admister";
 import { QinTool } from "qin_case";
 
@@ -47,9 +47,11 @@ export class AdProducts extends AdRegister {
     this.addField(AdTools.newAdFieldString("products_subgroup.nome", "SubGrupo - Nome", 60));
     this.addField(AdTools.newAdFieldNumeric("ordem", "Ordem"));
     this.addDetail({
-      module: AdModules.PRICES,
-      scopes: [AdScope.ALL],
-      filters: [{ linked: { name: "produto", with: "codigo" } }],
+      setup: {
+        module: AdModules.PRICES,
+        scopes: [AdScope.ALL],
+        filters: [{ linked: { name: "produto", with: "codigo" } }],
+      },
     });
     this.prepare();
   }
