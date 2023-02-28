@@ -3,7 +3,7 @@
   "displayName": "AdSales",
   "description": "AdSales is a Qinpel user application with all the tools of information on sales that a company may need. This app is part of the AdMister applications.",
   "keywords": [],
-  "repository": "https://github.com/pointeldevs/qia_adsales",
+  "repository": "https://github.com/pointel-com-br/qia_adsales",
   "author": "Éverton M. Vieira",
   "license": "LGPL-3.0-only",
   "version": "0.1.0",

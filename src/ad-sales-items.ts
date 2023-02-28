@@ -1,19 +1,19 @@
 import {
-  AdExpect,
-  AdModule,
-  AdModules,
-  AdRegBased,
-  AdRegCalls,
-  AdRegister,
-  AdRegistier,
-  AdSelect,
-  AdTools
+    AdExpect,
+    AdModule,
+    AdModules,
+    AdRegBased,
+    AdRegCalls,
+    AdRegister,
+    AdRegistier,
+    AdSelect,
+    AdTools
 } from "admister";
-import { QinTool } from "qin_case";
+import { Qine } from "qin_case";
 import { QinNature } from "qin_soul";
 import { registier as regPrices } from "./ad-prices";
 
-const base = QinTool.qinpel.chief.loadConfig(QinTool.qinpel.our.names.QinBaseSelected);
+const base = Qine.qinpel.chief.loadConfig(Qine.qinpel.our.names.QinBaseSelected);
 
 export const registry = AdModules.SALES_ITEMS.registry;
 

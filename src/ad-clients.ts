@@ -5,11 +5,11 @@ import {
   AdRegBased,
   AdRegister,
   AdRegistier,
-  AdTools,
+  AdTools
 } from "admister";
-import { QinTool } from "qin_case";
+import { Qine } from "qin_case";
 
-const base = QinTool.qinpel.chief.loadConfig(QinTool.qinpel.our.names.QinBaseSelected);
+const base = Qine.qinpel.chief.loadConfig(Qine.qinpel.our.names.QinBaseSelected);
 
 export const registry = AdModules.CLIENTS.registry;
 

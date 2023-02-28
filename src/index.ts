@@ -1,4 +1,4 @@
-import { AdMenuItem, AdModules, menuStartUp } from "admister";
+import { AdMenuItem, adMenuStartUp, AdModules } from "admister";
 import { AdClients } from "./ad-clients";
 import { AdPaymentTerms } from "./ad-payment-terms";
 import { AdPrices } from "./ad-prices";
@@ -19,4 +19,4 @@ const items: AdMenuItem[] = [
   { module: AdModules.SALES_ITEMS, register: AdSalesItems },
 ];
 
-menuStartUp(items).putAsBody();
+adMenuStartUp(items).putAsBody();
