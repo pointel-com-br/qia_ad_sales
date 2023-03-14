@@ -1,17 +1,18 @@
 import {
-    AdExpect,
-    AdModule,
-    AdModules,
-    AdRegBased,
-    AdRegCalls,
-    AdRegister,
-    AdRegistier,
-    AdSelect,
-    AdTools
+  AdExpect,
+  AdModule,
+  AdModules,
+  AdRegBased,
+  AdRegCalls,
+  AdRegister,
+  AdRegistier,
+  AdSelect,
+  AdTools
 } from "admister";
 import { Qine } from "qin_case";
 import { QinNature } from "qin_soul";
 import { registier as regPrices } from "./ad-prices";
+import { registier as regSales } from "./ad-sales";
 
 const base = Qine.qinpel.chief.loadConfig(Qine.qinpel.our.names.QinBaseSelected);
 
@@ -51,7 +52,24 @@ export class AdSalesItems extends AdRegister {
       AdTools.newAdFieldNumeric("total", "Total").putReadOnly(),
       AdTools.newAdFieldString("obs", "Obs", 100),
     ]);
-    this.prepare();
+    let fixedPrepedido = null;
+    if (expect) {
+      if (expect.fixed) {
+        for (const fixed of expect.fixed) {
+          if (fixed.name === "prepedido") {
+            fixedPrepedido = fixed.data;
+          }
+        }
+      }
+    }
+    if (fixedPrepedido) {
+      AdRegCalls.selectOne(this.makeSelectClientTableQuery(fixedPrepedido))
+        .then((res) => (this.model.getFieldByName("tabela").defaultValue = res))
+        .catch((err) => this.qinpel.jobbed.showError(err, "{qia_ad_sales}(ErrCode-000007)"))
+        .finally(() => this.prepare());
+    } else {
+      this.prepare();
+    }
   }
 
   private _updateValues = (_: any) => {
@@ -95,7 +113,7 @@ export class AdSalesItems extends AdRegister {
     let produto = this.model.getFieldByName("produto").value;
     let tabela = this.model.getFieldByName("tabela").value;
     if (produto && tabela && tabela !== this._tablePriorValue) {
-      AdRegCalls.selectOne(this.makeUpdatePriceQuery(produto, tabela))
+      AdRegCalls.selectOne(this.makeSelectPriceQuery(produto, tabela))
         .then((res) => {
           this.model.getFieldByName("preco").value = res;
           this._updateValues(null);
@@ -104,7 +122,30 @@ export class AdSalesItems extends AdRegister {
     }
   };
 
-  private makeUpdatePriceQuery(produto: any, tabela: any): AdSelect {
+  private makeSelectClientTableQuery(prepedido: any): AdSelect {
+    return {
+      registier: regSales,
+      fields: [{ name: "clients.tabela_preco", type: QinNature.CHARS }],
+      joins: [
+        {
+          module: AdModules.CLIENTS,
+          alias: "clients",
+          filters: [{ linked: { name: "cliente", with: "codigo" } }],
+        },
+      ],
+      filters: [
+        {
+          valued: {
+            name: "codigo",
+            type: QinNature.CHARS,
+            data: prepedido,
+          },
+        },
+      ],
+    };
+  }
+
+  private makeSelectPriceQuery(produto: any, tabela: any): AdSelect {
     return {
       registier: regPrices,
       fields: [{ name: "valor", type: QinNature.NUMERIC }],
