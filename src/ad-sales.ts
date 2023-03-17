@@ -1,12 +1,12 @@
 import {
-    AdExpect,
-    AdModule,
-    AdModules,
-    AdRegBased,
-    AdRegister,
-    AdRegistier,
-    AdScope,
-    AdTools
+  AdExpect,
+  AdModule,
+  AdModules,
+  AdRegBased,
+  AdRegister,
+  AdRegistier,
+  AdScope,
+  AdTools
 } from "admister";
 import { QinButton, Qine, QinLabel } from "qin_case";
 import { QinAction } from "qin_soul";
@@ -59,6 +59,7 @@ export class AdSales extends AdRegister {
             askErrLines: true,
           })
           .then((results) => {
+            this.tryRefresh();
             if (results.hasOut) {
               this.qinpel.jobbed.showInfo(results.outLines, "{qia_ad_sales}(ErrCode-000005)");
             }
