@@ -2,7 +2,7 @@ base = args[0]
 codigoPrePedido = args[1]
 
 import java.text.DecimalFormat
-numberFormat = new DecimalFormat('#0.00')
+numberFormat = new DecimalFormat('#0.000')
 
 def formatField(fieldValue) {
   if (fieldValue != null) {
@@ -22,7 +22,7 @@ def selectPrePedido = '''
 SELECT
   p.emitido_data, p.cliente, clientes.nome, clientes.fantasia,
   condicoes_pagamento.nome, p.cond_pagamento, p.obs, ' ' AS total_quantidade,
-  p.subtotal, p.out_desc, p.out_acresc, p.total,
+  p.subtotal, COALESCE(p.out_desc, 0.0), COALESCE(p.out_acresc, 0.0), p.total,
   p.representante, p.enviado
 FROM
   prepedidos AS p
