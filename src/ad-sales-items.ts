@@ -7,7 +7,7 @@ import {
   AdRegister,
   AdRegistier,
   AdSelect,
-  AdTools
+  AdTools,
 } from "admister";
 import { Qine } from "qin_case";
 import { QinNature } from "qin_soul";
@@ -37,11 +37,15 @@ export class AdSalesItems extends AdRegister {
     this.addFields([
       AdTools.newAdFieldString("prepedido", "PréPedido", 10).putKey().putReadOnly(),
       AdTools.newAdFieldString("codigo", "Código", 4).putKey(),
-      AdTools.newAdFieldString("produto", "Produto - Cód.", 6).putOnExited(this._updatePrice),
+      AdTools.newAdFieldString("produto", "Produto - Cód.", 6)
+        .putOnEntered(this._productPriorValueSaver)
+        .putOnChanged(this._updatePrice)
+        .putOnExited(this._updatePrice),
       AdTools.newAdFieldString("products.nome", "Produto - Nome.", 60),
       AdTools.newAdFieldNumeric("quantidade", "Quantidade").putOnExited(this._updateValues),
       AdTools.newAdFieldString("tabela", "Tabela", 6)
         .putOnEntered(this._tablePriorValueSaver)
+        .putOnChanged(this._updatePrice)
         .putOnExited(this._updatePrice),
       AdTools.newAdFieldNumeric("preco", "Preço").putOnExited(this._updateValues),
       AdTools.newAdFieldNumeric("subtotal", "SubTotal").putReadOnly(),
@@ -101,9 +105,14 @@ export class AdSalesItems extends AdRegister {
   };
 
   private _tablePriorValue = null;
+  private _productPriorValue = null;
 
   private _tablePriorValueSaver = (_: any) => {
     this._tablePriorValue = this.model.getFieldByName("tabela").value;
+  };
+
+  private _productPriorValueSaver = (_: any) => {
+    this._productPriorValue = this.model.getFieldByName("produto").value;
   };
 
   private _updatePrice = (_: any) => {
@@ -112,7 +121,11 @@ export class AdSalesItems extends AdRegister {
     }
     let produto = this.model.getFieldByName("produto").value;
     let tabela = this.model.getFieldByName("tabela").value;
-    if (produto && tabela && tabela !== this._tablePriorValue) {
+    if (
+      produto &&
+      tabela &&
+      (produto !== this._productPriorValue || tabela !== this._tablePriorValue)
+    ) {
       AdRegCalls.selectOne(this.makeSelectPriceQuery(produto, tabela))
         .then((res) => {
           this.model.getFieldByName("preco").value = res;
@@ -120,6 +133,8 @@ export class AdSalesItems extends AdRegister {
         })
         .catch((err) => this.qinpel.jobbed.showError(err, "{qia_ad_sales}(ErrCode-000006)"));
     }
+    this._productPriorValue = produto;
+    this._tablePriorValue = tabela;
   };
 
   private makeSelectClientTableQuery(prepedido: any): AdSelect {
